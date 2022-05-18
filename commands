@@ -1,0 +1,3 @@
+docker build -t $IMAGE_NAME .
+docker run tracing
+docker image rm -f tracing

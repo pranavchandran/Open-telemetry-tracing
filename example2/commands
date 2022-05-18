@@ -1,0 +1,3 @@
+docker build -t tracing_2
+
+Link -> http://localhost:16686/search
