@@ -4,9 +4,8 @@ a remote call that sometimes fails and does some database operations.'''
 import threading
 import oneagent # SDK initialization functions
 import oneagent.sdk as onesdk # All other SDK functions.
-
 from oneagent.common import MessagingDestinationType
-
+import pyodbc as pd
 
 IN_DEV_ENVIRONMENT = True # Let's assume we are *not* in production here...
 
@@ -18,6 +17,14 @@ def traced_db_operation(dbinfo, sql):
     # Entering the with block automatically start the tracer.
     with getsdk().trace_sql_database_request(dbinfo, sql) as tracer:
 
+# Connect database with ip
+        cnxn = pd.connect('DRIVER={SQL Server};SERVER=192.168.43.216,1433;DATABASE=Sample;UID=User1;PWD=Neepspranav12')
+        cursor = cnxn.cursor()
+        cursor.execute('SELECT * FROM [dbo].[Employees]')
+        row = cursor.fetchone()
+        while row:
+            print(row)
+            row = cursor.fetchone()
         # In real-world code, you would do the actual database operation here,
         # i.e. call the database's API.
 
@@ -25,6 +32,7 @@ def traced_db_operation(dbinfo, sql):
         # setter available on a tracer (as opposed to an optional parameter to a
         # trace_* function), it may be called anytime between creating and
         # ending the tracer (i.e. also after starting it).
+        tracer.set_rows_returned(42)
         tracer.set_round_trip_count(3)
 
     print('-db', dbinfo, sql)
@@ -74,17 +82,10 @@ def do_remote_call_thread_func(strtag, success):
             # info handles as often as possible (for efficiency reasons).
             with dbinfo:
                 traced_db_operation(
-                    dbinfo, "BEGIN TRAN;")
-                traced_db_operation(
-                    dbinfo,
-                    "SELECT TOP 1 qux FROM baz ORDER BY quux;")
-                traced_db_operation(
-                    dbinfo,
-                    "SELECT foo, bar FROM baz WHERE qux = 23")
-                traced_db_operation(
-                    dbinfo,
-                    "UPDATE baz SET foo = foo + 1 WHERE qux = 23;")
-                traced_db_operation(dbinfo, "COMMIT;")
+                    dbinfo, "select * from [dbo].Employees;")
+
+                
+ 
         print('-thread')
     except Exception as e:
         failed[0] = e
