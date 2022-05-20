@@ -9,3 +9,7 @@ With Docker, Jaeger UI . Tracing the requests
 ![Details_Sample_DB](https://user-images.githubusercontent.com/57369824/169505829-e6a36c54-fbb0-4fea-8b81-91c47e4cf9fc.png)
 ![Sample DB](https://user-images.githubusercontent.com/57369824/169505848-940034bc-c653-4aff-a364-000140e8a68c.png)
 ![Sample in Databases](https://user-images.githubusercontent.com/57369824/169505854-875d209f-034d-44bb-a5b2-6e76893510d2.png)
+
+## Smartscape topology View
+
+![smartscape topology](https://user-images.githubusercontent.com/57369824/169507604-7a2dd4b1-f777-4481-93b1-d0fa1c713965.png)
