@@ -1,2 +1,0 @@
-jaeger-client
-opentracing_instrumentation

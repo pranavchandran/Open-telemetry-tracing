@@ -114,9 +114,9 @@ def do_remote_call(strtag, success):
 def mock_incoming_web_request():
     sdk = getsdk()
     wappinfo = sdk.create_web_application_info(
-        virtual_host='example.com', # Logical name of the host server.
-        application_id='MyWebApplication', # Unique web application ID.
-        context_root='/my-web-app/') # App's prefix of the path part of the URL.
+        virtual_host='pranav.com', # Logical name of the host server.
+        application_id='MyTestApplication', # Unique web application ID.
+        context_root='/my-test-app/') # App's prefix of the path part of the URL.
 
     with wappinfo:
         # This with-block will automatically free web application info handle
@@ -132,23 +132,36 @@ def mock_incoming_web_request():
         # IncomingWebRequestTracer.
         wreq = sdk.trace_incoming_web_request(
             wappinfo,
-            'http://example.com/my-web-app/foo?bar=baz',
+            'https://simple-tool-rental-api.glitch.me/tools?category=electric-generators&available=true',
             'GET',
-            headers={'Host': 'example.com', 'X-foo': 'bar'},
-            remote_address='127.0.0.1:12345')
+            headers={
+                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36',
+                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
+                'Accept-Language': 'en-US,en;q=0.9',
+                'Upgrade-Insecure-Requests': '1',
+                'Cache-Control': 'max-age=0',
+                'Connection': 'keep-alive',
+                'Host': 'simple-tool-rental-api.glitch.me',
+                'Cookie': '_ga=GA1.2.1278131931.1569781288; _gid=GA1.2.1023225811.1569781288; _gat=1',
+            }
+        )
         with wreq:
-            wreq.add_parameter('my_form_field', '1234')
+            wreq.add_parameter('category', 'electric-generators')
+            wreq.add_parameter('available', 'true')
             # Process web request
-            wreq.add_response_headers({'Content-Length': '1234'})
-            wreq.set_status_code(200) # OK
+            wreq.add_response_headers({
+                'Content-Type': 'application/json'
+            }
+            )
+            wreq.set_status_code(200)
 
             # Add 3 different custom attributes.
-            sdk.add_custom_request_attribute('custom int attribute', 42)
-            sdk.add_custom_request_attribute('custom float attribute', 1.778)
-            sdk.add_custom_request_attribute('custom string attribute', 'snow is falling')
+            # sdk.add_custom_request_attribute('custom int attribute', 42)
+            # sdk.add_custom_request_attribute('custom float attribute', 1.778)
+            # sdk.add_custom_request_attribute('custom string attribute', 'snow is falling')
 
-            # This call will trigger the diagnostic callback.
-            sdk.add_custom_request_attribute('another key', None)
+            # # This call will trigger the diagnostic callback.
+            # sdk.add_custom_request_attribute('another key', None)
 
             # This call simulates incoming messages.
             mock_process_incoming_message()
@@ -158,10 +171,38 @@ def _process_my_outgoing_request(_tag):
 
 def mock_outgoing_web_request():
     sdk = getsdk()
-
+    url = 'https://simple-tool-rental-api.glitch.me/tools?category=electric-generators&available=true'
+    
     # Create tracer and and request headers.
-    tracer = sdk.trace_outgoing_web_request('http://example.com/their-web-app/bar?foo=foz', 'GET',
-                                            headers={'X-not-a-useful-header': 'python-was-here'})
+    tracer = sdk.trace_outgoing_web_request(url, 'GET',
+                                            headers={
+                                                'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36',
+                                                'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
+                                                'Accept-Language': 'en-US,en;q=0.9',
+                                                'Upgrade-Insecure-Requests': '1',
+                                                'Cache-Control': 'max-age=0',
+                                                'Connection': 'keep-alive',
+                                                'Host': 'simple-tool-rental-api.glitch.me',
+                                                'Cookie': '_ga=GA1.2.1278131931.1569781288; _gid=GA1.2.1023225811.1569781288; _gat=1',
+                                            }
+                                            )
+    with tracer:
+        # Process request
+        tracer.add_response_headers({
+            'Content-Type': 'application/json'
+        }
+        )
+        tracer.set_status_code(200)
+        # Add 3 different custom attributes.
+        # sdk.add_custom_request_attribute('custom int attribute', 42)
+        # sdk.add_custom_request_attribute('custom float attribute', 1.778)
+        # sdk.add_custom_request_attribute('custom string attribute', 'snow is falling')
+
+        # # This call will trigger the diagnostic callback.
+        # sdk.add_custom_request_attribute('another key', None)
+
+        # This call simulates incoming messages.
+        # mock_process_incoming_message()
 
     with tracer:
         # Now get the outgoing dynatrace tag. You have to add this tag as request header to your
@@ -170,12 +211,35 @@ def mock_outgoing_web_request():
         tag = tracer.outgoing_dynatrace_string_tag
 
         # Here you process and send your web request.
-        _process_my_outgoing_request(tag)
+        # _process_my_outgoing_request(tag)
+        response = sdk.trace_outgoing_web_request(url, 'GET',
+                                        headers={
+                                            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/74.0.3729.169 Safari/537.36',
+                                            'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3',
+                                            'Accept-Language': 'en-US,en;q=0.9',
+                                            'Upgrade-Insecure-Requests': '1',
+                                            'DYNATRACE_HTTP_HEADER_NAME': tag,
+                                            'Cache-Control': 'max-age=0',
+                                            'Connection': 'keep-alive',
+                                            'Host': 'simple-tool-rental-api.glitch.me',
+                                            'Cookie': '_ga=GA1.2.1278131931.1569781288; _gid=GA1.2.1023225811.1569781288; _gat=1',
+                                        }
+                                        )
 
         # As soon as the response is received, you can add the response headers to the
         # tracer and you shouldn't forget to set the status code, too.
-        tracer.add_response_headers({'Content-Length': '1234'})
-        tracer.set_status_code(200) # OK
+        tracer.add_response_headers({
+            'Content-Type': 'application/json',
+            'X-Dynatrace-Tag': tag,
+        }
+        )
+        tracer.set_status_code(response.get_status_code())
+
+        # This call will trigger the diagnostic callback.
+        # sdk.add_custom_request_attribute('another key', None)
+
+        # This call simulates incoming messages.
+        mock_process_incoming_message()
 
 def mock_process_incoming_message():
     sdk = getsdk()
