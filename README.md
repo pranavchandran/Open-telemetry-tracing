@@ -15,3 +15,8 @@ With Docker, Jaeger UI . Tracing the requests
 ## Smartscape topology View
 
 ![smartscape topology](https://user-images.githubusercontent.com/57369824/169507604-7a2dd4b1-f777-4481-93b1-d0fa1c713965.png)
+
+## Jaegar 
+#### path jaegar_practices/
+
+
